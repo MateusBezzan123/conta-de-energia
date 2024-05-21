@@ -13,7 +13,7 @@ interface ExtractedData {
     publicLightingContribution?: number;
 }
 
-export const extractDataFromPDF = async (filepath: string): Promise<ExtractedData> => {
+const extractDataFromPDF = async (filepath: string): Promise<ExtractedData> => {
     const dataBuffer = fs.readFileSync(filepath);
     const data = await pdfParse(dataBuffer);
     const text = data.text;
@@ -37,7 +37,7 @@ export const extractDataFromPDF = async (filepath: string): Promise<ExtractedDat
 
     const energyElectricValueRegex = /Energia\s*Elétrica\s*kWh\s*\d+\s*([\d,]+)/i;
     const energySCEEEValueRegex = /Energia\s*SCEE\s*ISENTA\s*kWh\s*\d+\s*([\d,]+)/i;
-    const energyCompensatedValueRegex = /Energia\s*compensada\s*GD\s*I\s*kWh\s*\d+\s*([\-\d,]+)/i;
+    const energyCompensatedValueRegex = /Energia\s*compensada\s*GD\s*I\s*kWh\s*\d+\s*([\d,-]+)/i;
 
     const extractField = (regex: RegExp, text: string): string | null => {
         const match = regex.exec(text);
@@ -58,13 +58,14 @@ export const extractDataFromPDF = async (filepath: string): Promise<ExtractedDat
     const energyCompensatedQuantity = extractField(energyCompensatedQuantityRegex, text);
     const publicLightingContribution = extractField(publicLightingContributionRegex, text);
 
-    if (
-        clientNumber === null ||
-        referenceMonth === null ||
-        energyElectricValue === null ||
-        energySCEEEValue === null ||
-        energyCompensatedValue === null
-    ) {
+    console.log('Extracted Data:');
+    console.log('clientNumber:', clientNumber);
+    console.log('referenceMonth:', referenceMonth);
+    console.log('energyElectricValue:', energyElectricValue);
+    console.log('energySCEEEValue:', energySCEEEValue);
+    console.log('energyCompensatedValue:', energyCompensatedValue);
+
+    if (clientNumber === null || referenceMonth === null) {
         throw new Error('Required fields are missing.');
     }
 
@@ -80,3 +81,5 @@ export const extractDataFromPDF = async (filepath: string): Promise<ExtractedDat
         publicLightingContribution: publicLightingContribution ? parseFloat(publicLightingContribution.replace(',', '.')) : undefined
     };
 };
+
+export default extractDataFromPDF;

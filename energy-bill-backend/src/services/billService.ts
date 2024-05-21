@@ -2,8 +2,8 @@ import { IncomingForm, File as FormidableFile, Files } from 'formidable';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
 import { Request } from 'express';
-import { v4 as uuidv4 } from 'uuid';  // Import the uuid library
-import { extractDataFromPDF } from '../models/billModel';
+import { v4 as uuidv4 } from 'uuid';
+import extractDataFromPDF from '../models/billModel';
 
 const prisma = new PrismaClient();
 
