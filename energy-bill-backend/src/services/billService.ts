@@ -2,6 +2,7 @@ import { IncomingForm, File as FormidableFile, Files } from 'formidable';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
 import { Request } from 'express';
+import { v4 as uuidv4 } from 'uuid';  // Import the uuid library
 import { extractDataFromPDF } from '../models/billModel';
 
 const prisma = new PrismaClient();
@@ -34,8 +35,12 @@ const handleUpload = (req: Request): Promise<any> => {
 
             try {
                 const data = await extractDataFromPDF(filepath);
-                await prisma.bill.create({ data: data as any });  // Using 'any' to bypass type checking
-                resolve(data);
+                const billData = {
+                    ...data,
+                    id: uuidv4()
+                };
+                await prisma.bill.create({ data: billData });
+                resolve(billData);
             } catch (err) {
                 reject(err);
             }
