@@ -39,14 +39,30 @@ async function extractDataFromPDF(filepath) {
     const data = await pdfParse(dataBuffer);
     const text = data.text;
 
-    const extractField = (regex, text) => {
-        const match = regex.exec(text);
-        return match ? match[1].trim() : null;
+    const findLine = (keyword, text) => {
+        const lines = text.split('\n');
+        return lines.find(line => line.includes(keyword));
     };
+
+    const clientNumberLine = findLine('Nº DO CLIENTE', text);
+    const referenceMonthLine = findLine('Referente a', text);
+
+    const extractValue = (line) => {
+        const parts = line.split(/\s+/);
+        return parts[parts.length - 1];
+    };
+
+    const clientNumber = clientNumberLine ? extractValue(clientNumberLine) : null;
+    const referenceMonth = referenceMonthLine ? extractValue(referenceMonthLine) : null;
 
     const energyElectricValueRegex = /Energia\s*Elétrica\s*kWh\s*\d+\s*([\d,]+)/i;
     const energySCEEEValueRegex = /Energia\s*SCEE\s*ISENTA\s*kWh\s*\d+\s*([\d,]+)/i;
     const energyCompensatedValueRegex = /Energia\s*compensada\s*GD\s*I\s*kWh\s*\d+\s*([\-\d,]+)/i;
+
+    const extractField = (regex, text) => {
+        const match = regex.exec(text);
+        return match ? match[1].trim() : null;
+    };
 
     const energyElectricValue = extractField(energyElectricValueRegex, text);
     const energySCEEEValue = extractField(energySCEEEValueRegex, text);
@@ -63,6 +79,8 @@ async function extractDataFromPDF(filepath) {
     const publicLightingContribution = extractField(publicLightingContributionRegex, text);
 
     const result = {
+        clientNumber: clientNumber ? clientNumber.trim() : null,
+        referenceMonth: referenceMonth ? referenceMonth.trim() : null,
         energyElectricQuantity: energyElectricQuantity ? parseInt(energyElectricQuantity) : null,
         energyElectricValue: energyElectricValue ? parseFloat(energyElectricValue.replace(',', '.')) : null,
         energySCEEEQuantity: energySCEEEQuantity ? parseInt(energySCEEEQuantity) : null,
@@ -71,8 +89,10 @@ async function extractDataFromPDF(filepath) {
         energyCompensatedValue: energyCompensatedValue ? parseFloat(energyCompensatedValue.replace(',', '.')) : null,
         publicLightingContribution: publicLightingContribution ? parseFloat(publicLightingContribution.replace(',', '.')) : null
     };
-
+    
     if (
+        result.clientNumber === null ||
+        result.referenceMonth === null ||
         result.energyElectricValue === null ||
         result.energySCEEEValue === null ||
         result.energyCompensatedValue === null

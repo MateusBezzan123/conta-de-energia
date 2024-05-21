@@ -8,12 +8,14 @@ generator client {
 }
 
 model Bill {
-  id                         Int      @id @default(autoincrement())
-  energyElectricQuantity     Int?
-  energyElectricValue        Float?
-  energySCEEEQuantity        Int?
-  energySCEEEValue           Float?
-  energyCompensatedQuantity  Int?
-  energyCompensatedValue     Float?
+  id                        Int      @id @default(autoincrement())
+  clientNumber              String
+  referenceMonth            String
+  energyElectricQuantity    Int?
+  energyElectricValue       Float?
+  energySCEEEQuantity       Int?
+  energySCEEEValue          Float?
+  energyCompensatedQuantity Int?
+  energyCompensatedValue    Float?
   publicLightingContribution Float?
 }
