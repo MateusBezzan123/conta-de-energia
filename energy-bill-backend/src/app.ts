@@ -1,5 +1,5 @@
-const express = require('express');
-const billRoutes = require('./routes/billRoutes');
+import express from 'express';
+import billRoutes from './routes/billRoutes';
 
 const app = express();
 const PORT = 3000;
