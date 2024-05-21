@@ -48,6 +48,18 @@ const handleUpload = (req: Request): Promise<any> => {
     });
 };
 
+const getAllBills = async (): Promise<any> => {
+    return prisma.bill.findMany();
+};
+
+const getBillById = async (id: string): Promise<any> => {
+    return prisma.bill.findUnique({
+        where: { id }
+    });
+};
+
 export default {
-    handleUpload
+    handleUpload,
+    getAllBills,
+    getBillById
 };
