@@ -1,0 +1,19 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Bill {
+  id                         Int      @id @default(autoincrement())
+  energyElectricQuantity     Int?
+  energyElectricValue        Float?
+  energySCEEEQuantity        Int?
+  energySCEEEValue           Float?
+  energyCompensatedQuantity  Int?
+  energyCompensatedValue     Float?
+  publicLightingContribution Float?
+}
