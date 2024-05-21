@@ -16,19 +16,31 @@ app.post('/upload', (req, res) => {
 
     form.parse(req, (err, fields, files) => {
         if (err) {
+            console.error('Error parsing the files:', err);
             return res.status(500).json({ error: 'Error parsing the files' });
         }
 
-        const file = files[''].pop();
+        console.log('Files received:', files);
+
+        const fileKey = Object.keys(files)[0];
+        const file = files[fileKey][0];         
+        if (!file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
         const filepath = file.filepath;
 
         extractDataFromPDF(filepath)
             .then(data => {
                 prisma.bill.create({ data })
                     .then(() => res.json({ message: 'Data saved successfully', data }))
-                    .catch(err => res.status(500).json({ error: 'Error saving data to database', details: err }));
+                    .catch(err => {
+                        console.error('Error saving data to database:', err);
+                        res.status(500).json({ error: 'Error saving data to database', details: err });
+                    });
             })
             .catch(err => {
+                console.error('Error extracting data from PDF:', err);
                 res.status(500).json({ error: err.message });
             });
     });
@@ -39,21 +51,22 @@ async function extractDataFromPDF(filepath) {
     const data = await pdfParse(dataBuffer);
     const text = data.text;
 
-    const findLine = (keyword, text) => {
+    const findLineAndValue = (text, keyword) => {
         const lines = text.split('\n');
-        return lines.find(line => line.includes(keyword));
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].includes(keyword)) {
+                const valueLine = lines[i + 1];
+                if (valueLine) {
+                    const firstField = valueLine.trim().split(/\s+/)[0];
+                    return firstField;
+                }
+            }
+        }
+        return null;
     };
 
-    const clientNumberLine = findLine('Nº DO CLIENTE', text);
-    const referenceMonthLine = findLine('Referente a', text);
-
-    const extractValue = (line) => {
-        const parts = line.split(/\s+/);
-        return parts[parts.length - 1];
-    };
-
-    const clientNumber = clientNumberLine ? extractValue(clientNumberLine) : null;
-    const referenceMonth = referenceMonthLine ? extractValue(referenceMonthLine) : null;
+    const clientNumber = findLineAndValue(text, 'Nº DO CLIENTE');
+    const referenceMonth = findLineAndValue(text, 'Referente a');
 
     const energyElectricValueRegex = /Energia\s*Elétrica\s*kWh\s*\d+\s*([\d,]+)/i;
     const energySCEEEValueRegex = /Energia\s*SCEE\s*ISENTA\s*kWh\s*\d+\s*([\d,]+)/i;
@@ -89,7 +102,7 @@ async function extractDataFromPDF(filepath) {
         energyCompensatedValue: energyCompensatedValue ? parseFloat(energyCompensatedValue.replace(',', '.')) : null,
         publicLightingContribution: publicLightingContribution ? parseFloat(publicLightingContribution.replace(',', '.')) : null
     };
-    
+
     if (
         result.clientNumber === null ||
         result.referenceMonth === null ||
@@ -99,10 +112,9 @@ async function extractDataFromPDF(filepath) {
     ) {
         throw new Error('Required fields are missing.');
     }
-
     return result;
 }
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log('Server is running on http://localhost:${PORT});')
 });
