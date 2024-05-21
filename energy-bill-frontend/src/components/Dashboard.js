@@ -1,8 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
+import styled from 'styled-components';
 
 Chart.register(...registerables);
+
+const Container = styled.div`
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+  background: ${({ theme }) => theme.colors.lightText};
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+`;
+
+const FilterInput = styled.input`
+  padding: 10px;
+  margin-right: 10px;
+  width: 200px;
+  max-width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+`;
+
+const FilterButton = styled.button`
+  padding: 10px;
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.lightText};
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.secondary};
+  }
+`;
+
+const ChartContainer = styled.div`
+  margin-top: 20px;
+`;
 
 function Dashboard() {
   const [invoices, setInvoices] = useState([]);
@@ -87,24 +123,26 @@ function Dashboard() {
   };
 
   return (
-    <div>
+    <Container>
       <h1>Dashboard</h1>
-      <input
-        type="text"
-        value={clientNumber}
-        onChange={(e) => setClientNumber(e.target.value)}
-        placeholder="Client Number"
-      />
-      <button onClick={handleFilter}>Filter</button>
       <div>
+        <FilterInput
+          type="text"
+          value={clientNumber}
+          onChange={(e) => setClientNumber(e.target.value)}
+          placeholder="Client Number"
+        />
+        <FilterButton onClick={handleFilter}>Filter</FilterButton>
+      </div>
+      <ChartContainer>
         <h2>Energia (kWh)</h2>
         <Line data={energyData} />
-      </div>
-      <div>
+      </ChartContainer>
+      <ChartContainer>
         <h2>Valores Monetários (R$)</h2>
         <Line data={valueData} />
-      </div>
-    </div>
+      </ChartContainer>
+    </Container>
   );
 }
 
