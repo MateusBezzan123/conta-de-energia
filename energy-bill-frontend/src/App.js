@@ -1,36 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Dashboard from './components/Dashboard';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Dashboard from './components/Dashboard'
+import Invoices from './pages/Invoices';
 
 function App() {
-  const [invoices, setInvoices] = useState([]);
-  const [clientNumber, setClientNumber] = useState('');
-
-  useEffect(() => {
-    async function fetchData() {
-      const response = await axios.get('/invoices');
-      setInvoices(response.data);
-    }
-    fetchData();
-  }, []);
-
-  const handleFilter = async () => {
-    const response = await axios.get(`/invoices/${clientNumber}`);
-    setInvoices(response.data);
-  };
-
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <input
-        type="text"
-        value={clientNumber}
-        onChange={(e) => setClientNumber(e.target.value)}
-        placeholder="Client Number"
-      />
-      <button onClick={handleFilter}>Filter</button>
-      <Dashboard invoices={invoices} />
-    </div>
+    <Router>
+      <div>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/invoices" element={<Invoices />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
