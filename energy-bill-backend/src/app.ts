@@ -11,7 +11,6 @@ const corsOptions = {
 }
 
 
-// Configurar CORS
 app.use(cors(corsOptions))
 
 app.use(express.json());

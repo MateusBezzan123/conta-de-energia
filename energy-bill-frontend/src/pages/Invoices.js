@@ -45,6 +45,20 @@ const InvoiceItem = styled.div`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
+const DownloadButton = styled.button`
+  margin-top: 10px;
+  padding: 10px;
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.lightText};
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.secondary};
+  }
+`;
+
 function Invoices() {
   const [invoices, setInvoices] = useState([]);
   const [clientNumber, setClientNumber] = useState('');
@@ -83,6 +97,27 @@ function Invoices() {
     }
   };
 
+  const handleDownload = async (id) => {
+    const downloadUrl = `http://localhost:3001/api/bills/${id}/download`;
+    try {
+      const response = await fetch(downloadUrl);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `${id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading the file:', error);
+    }
+  };
+
   return (
     <Container>
       <h1>Library of Invoices</h1>
@@ -100,7 +135,7 @@ function Invoices() {
           <InvoiceItem key={invoice.id}>
             <p>Client Number: {invoice.clientNumber}</p>
             <p>Reference Month: {invoice.referenceMonth}</p>
-            <a href={`/api/bills/${invoice.id}/download`}>Download Invoice</a>
+            <DownloadButton onClick={() => handleDownload(invoice.id)}>Download Invoice</DownloadButton>
           </InvoiceItem>
         ))}
       </InvoiceList>

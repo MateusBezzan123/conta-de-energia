@@ -37,7 +37,8 @@ const handleUpload = (req: Request): Promise<any> => {
                 const data = await extractDataFromPDF(filepath);
                 const billData = {
                     ...data,
-                    id: uuidv4()
+                    id: uuidv4(),
+                    filePath: filepath // Adiciona o caminho do arquivo ao salvar a fatura
                 };
                 await prisma.bill.create({ data: billData });
                 resolve(billData);

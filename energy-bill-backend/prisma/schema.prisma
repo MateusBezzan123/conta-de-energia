@@ -18,4 +18,5 @@ model Bill {
   energyCompensatedQuantity Int?
   energyCompensatedValue    Float?
   publicLightingContribution Float?
+  filePath                  String   
 }

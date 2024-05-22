@@ -11,6 +11,7 @@ interface ExtractedData {
     energyCompensatedQuantity?: number;
     energyCompensatedValue?: number;
     publicLightingContribution?: number;
+    filePath?: string; // Adicionado para armazenar o caminho do arquivo
 }
 
 const extractDataFromPDF = async (filepath: string): Promise<ExtractedData> => {
@@ -58,13 +59,6 @@ const extractDataFromPDF = async (filepath: string): Promise<ExtractedData> => {
     const energyCompensatedQuantity = extractField(energyCompensatedQuantityRegex, text);
     const publicLightingContribution = extractField(publicLightingContributionRegex, text);
 
-    console.log('Extracted Data:');
-    console.log('clientNumber:', clientNumber);
-    console.log('referenceMonth:', referenceMonth);
-    console.log('energyElectricValue:', energyElectricValue);
-    console.log('energySCEEEValue:', energySCEEEValue);
-    console.log('energyCompensatedValue:', energyCompensatedValue);
-
     if (clientNumber === null || referenceMonth === null) {
         throw new Error('Required fields are missing.');
     }
@@ -78,7 +72,8 @@ const extractDataFromPDF = async (filepath: string): Promise<ExtractedData> => {
         energySCEEEValue: energySCEEEValue ? parseFloat(energySCEEEValue.replace(',', '.')) : undefined,
         energyCompensatedQuantity: energyCompensatedQuantity ? parseInt(energyCompensatedQuantity) : undefined,
         energyCompensatedValue: energyCompensatedValue ? parseFloat(energyCompensatedValue.replace(',', '.')) : undefined,
-        publicLightingContribution: publicLightingContribution ? parseFloat(publicLightingContribution.replace(',', '.')) : undefined
+        publicLightingContribution: publicLightingContribution ? parseFloat(publicLightingContribution.replace(',', '.')) : undefined,
+        filePath: filepath
     };
 };
 
