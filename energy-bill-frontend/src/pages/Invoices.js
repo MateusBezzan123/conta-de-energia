@@ -2,12 +2,19 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
-  padding: 20px;
+  padding: 30px;
   max-width: 1200px;
-  margin: auto;
+  margin: 20px auto;
   background: ${({ theme }) => theme.colors.lightText};
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+`;
+
+const FilterSection = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 `;
 
 const FilterInput = styled.input`
@@ -15,12 +22,12 @@ const FilterInput = styled.input`
   margin-right: 10px;
   width: 200px;
   max-width: 100%;
-  border: 1px solid #ccc;
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 4px;
 `;
 
 const FilterButton = styled.button`
-  padding: 10px;
+  padding: 10px 20px;
   background-color: ${({ theme }) => theme.colors.primary};
   color: ${({ theme }) => theme.colors.lightText};
   border: none;
@@ -33,15 +40,15 @@ const FilterButton = styled.button`
 `;
 
 const InvoiceList = styled.div`
-  margin-top: 20px;
+  margin-top: 30px;
 `;
 
 const InvoiceItem = styled.div`
-  padding: 10px;
-  border: 1px solid #ddd;
-  margin-bottom: 10px;
-  border-radius: 4px;
-  background-color: #fff;
+  padding: 20px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background-color: ${({ theme }) => theme.colors.lightText};
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
@@ -59,7 +66,7 @@ const DownloadButton = styled.button`
   }
 `;
 
-function Invoices() {
+const Invoices = () => {
   const [invoices, setInvoices] = useState([]);
   const [clientNumber, setClientNumber] = useState('');
   const [filteredInvoices, setFilteredInvoices] = useState([]);
@@ -74,7 +81,7 @@ function Invoices() {
         const data = await response.json();
         setInvoices(data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Erro ao buscar dados:', error);
       }
     }
     fetchData();
@@ -102,7 +109,7 @@ function Invoices() {
     try {
       const response = await fetch(downloadUrl);
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Erro na resposta da rede');
       }
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -114,28 +121,28 @@ function Invoices() {
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error downloading the file:', error);
+      console.error('Erro ao baixar o arquivo:', error);
     }
   };
 
   return (
     <Container>
-      <h1>Library of Invoices</h1>
-      <div>
+      <h1>Biblioteca de Faturas</h1>
+      <FilterSection>
         <FilterInput
           type="text"
           value={clientNumber}
           onChange={(e) => setClientNumber(e.target.value)}
-          placeholder="Client Number"
+          placeholder="Número do Cliente"
         />
-        <FilterButton onClick={handleFilter}>Filter</FilterButton>
-      </div>
+        <FilterButton onClick={handleFilter}>Filtrar</FilterButton>
+      </FilterSection>
       <InvoiceList>
         {filteredInvoices.map((invoice) => (
           <InvoiceItem key={invoice.id}>
-            <p>Client Number: {invoice.clientNumber}</p>
-            <p>Reference Month: {invoice.referenceMonth}</p>
-            <DownloadButton onClick={() => handleDownload(invoice.id)}>Download Invoice</DownloadButton>
+            <p>Número do Cliente: {invoice.clientNumber}</p>
+            <p>Mês de Referência: {invoice.referenceMonth}</p>
+            <DownloadButton onClick={() => handleDownload(invoice.id)}>Baixar Fatura</DownloadButton>
           </InvoiceItem>
         ))}
       </InvoiceList>

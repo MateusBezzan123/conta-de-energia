@@ -6,12 +6,19 @@ import styled from 'styled-components';
 Chart.register(...registerables);
 
 const Container = styled.div`
-  padding: 20px;
+  padding: 30px;
   max-width: 1200px;
-  margin: auto;
+  margin: 20px auto;
   background: ${({ theme }) => theme.colors.lightText};
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+`;
+
+const FilterSection = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 `;
 
 const FilterInput = styled.input`
@@ -19,12 +26,12 @@ const FilterInput = styled.input`
   margin-right: 10px;
   width: 200px;
   max-width: 100%;
-  border: 1px solid #ccc;
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 4px;
 `;
 
 const FilterButton = styled.button`
-  padding: 10px;
+  padding: 10px 20px;
   background-color: ${({ theme }) => theme.colors.primary};
   color: ${({ theme }) => theme.colors.lightText};
   border: none;
@@ -37,10 +44,10 @@ const FilterButton = styled.button`
 `;
 
 const ChartContainer = styled.div`
-  margin-top: 20px;
+  margin-top: 30px;
 `;
 
-function Dashboard() {
+const Dashboard = () => {
   const [invoices, setInvoices] = useState([]);
   const [clientNumber, setClientNumber] = useState('');
   const [filteredInvoices, setFilteredInvoices] = useState([]);
@@ -125,15 +132,15 @@ function Dashboard() {
   return (
     <Container>
       <h1>Dashboard</h1>
-      <div>
+      <FilterSection>
         <FilterInput
           type="text"
           value={clientNumber}
           onChange={(e) => setClientNumber(e.target.value)}
-          placeholder="Client Number"
+          placeholder="Número do Cliente"
         />
-        <FilterButton onClick={handleFilter}>Filter</FilterButton>
-      </div>
+        <FilterButton onClick={handleFilter}>Filtrar</FilterButton>
+      </FilterSection>
       <ChartContainer>
         <h2>Energia (kWh)</h2>
         <Line data={energyData} />
