@@ -11,7 +11,7 @@ interface ExtractedData {
     energyCompensatedQuantity?: number;
     energyCompensatedValue?: number;
     publicLightingContribution?: number;
-    filePath?: string; // Adicionado para armazenar o caminho do arquivo
+    filePath?: string;
 }
 
 const extractDataFromPDF = async (filepath: string): Promise<ExtractedData> => {

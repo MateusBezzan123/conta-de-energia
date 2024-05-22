@@ -38,7 +38,7 @@ const handleUpload = (req: Request): Promise<any> => {
                 const billData = {
                     ...data,
                     id: uuidv4(),
-                    filePath: filepath // Adiciona o caminho do arquivo ao salvar a fatura
+                    filePath: filepath
                 };
                 await prisma.bill.create({ data: billData });
                 resolve(billData);
